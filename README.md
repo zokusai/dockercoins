@@ -9,3 +9,5 @@ hasher = web service computing hash of POSTed data
 worker = background process using rng and hasher
 webui = web interface to watch progress
 ```
+
+Forked by Sebastian Colomar
