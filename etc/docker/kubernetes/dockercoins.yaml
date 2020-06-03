@@ -13,18 +13,23 @@ spec:
     matchLabels:
       service: redis
   ingress:
-    - ports:
-        - protocol: TCP
+    - 
+      ports:
+        - 
+          protocol: TCP
           port: 6379
       from:
-        - namespaceSelector:
+        - 
+          namespaceSelector:
             matchLabels:
               namespace: dockercoins
-        - podSelector:
+        - 
+          podSelector:
             matchLabels:
               service: webui
   policyTypes:
-    - Ingress
+    - 
+      Ingress
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -36,18 +41,23 @@ spec:
     matchLabels:
       service: redis
   ingress:
-    - ports:
-        - protocol: TCP
+    - 
+      ports:
+        - 
+          protocol: TCP
           port: 6379
       from:
-        - namespaceSelector:
+        - 
+          namespaceSelector:
             matchLabels:
               namespace: dockercoins
-        - podSelector:
+        - 
+          podSelector:
             matchLabels:
               service: worker
   policyTypes:
-    - Ingress
+    - 
+      Ingress
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -59,16 +69,21 @@ spec:
     matchLabels:
       service: webui
   ingress:
-    - ports:
-        - protocol: TCP
+    - 
+      ports:
+        - 
+          protocol: TCP
           port: 8080
       from:
-        - namespaceSelector:
+        - 
+          namespaceSelector:
             matchLabels:
               namespace: dockercoins
-        - podSelector: {}
+        - 
+          podSelector: {}
   policyTypes:
-    - Ingress
+    - 
+      Ingress
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -80,18 +95,23 @@ spec:
     matchLabels:
       service: hasher
   ingress:
-    - ports:
-        - protocol: TCP
+    - 
+      ports:
+        - 
+          protocol: TCP
           port: 8080
       from:
-        - namespaceSelector:
+        - 
+          namespaceSelector:
             matchLabels:
               namespace: dockercoins
-        - podSelector:
+        - 
+          podSelector:
             matchLabels:
               service: worker
   policyTypes:
-    - Ingress
+    - 
+      Ingress
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -103,18 +123,23 @@ spec:
     matchLabels:
       service: hasher
   ingress:
-    - ports:
-        - protocol: TCP
+    - 
+      ports:
+        - 
+          protocol: TCP
           port: 8080
       from:
-        - namespaceSelector:
+        - 
+          namespaceSelector:
             matchLabels:
               namespace: dockercoins
-        - podSelector:
+        - 
+          podSelector:
             matchLabels:
               service: worker
   policyTypes:
-    - Ingress
+    - 
+      Ingress
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -222,7 +247,8 @@ metadata:
   namespace: dockercoins
 spec:
   ports:
-  - port: 8080
+  - 
+    port: 8080
   selector:
     service: hasher
 ---
@@ -233,7 +259,8 @@ metadata:
   namespace: dockercoins
 spec:
   ports:
-  - port: 6379
+  - 
+    port: 6379
   selector:
     service: redis
 ---
@@ -244,7 +271,8 @@ metadata:
   namespace: dockercoins
 spec:
   ports:
-  - port: 8080
+  - 
+    port: 8080
   selector:
     service: rng
 ---
