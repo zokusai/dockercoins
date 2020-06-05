@@ -148,7 +148,7 @@ spec:
     spec:
       containers:
       -
-        image: redis
+        image: registry.access.redhat.com/rhscl/redis-5-rhel7
         name: redis
 ---
 apiVersion: apps/v1
