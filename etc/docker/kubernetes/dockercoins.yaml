@@ -1,104 +1,12 @@
-#########################################################################
-#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza      #
-#      SPDX-License-Identifier:  GPL-2.0-only                           #
-#########################################################################
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: redis-webui
-spec:
-  podSelector:
-    matchLabels:
-      service: redis
-  ingress:
-    - 
-      ports:
-        - 
-          protocol: TCP
-          port: 6379
-      from:
-        - 
-          podSelector:
-            matchLabels:
-              service: webui
-  policyTypes:
-    - 
-      Ingress
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: redis-worker
-spec:
-  podSelector:
-    matchLabels:
-      service: redis
-  ingress:
-    - 
-      ports:
-        - 
-          protocol: TCP
-          port: 6379
-      from:
-        - 
-          podSelector:
-            matchLabels:
-              service: worker
-  policyTypes:
-    - 
-      Ingress
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: rng
-spec:
-  podSelector:
-    matchLabels:
-      service: hasher
-  ingress:
-    - 
-      ports:
-        - 
-          protocol: TCP
-          port: 8080
-      from:
-        - 
-          podSelector:
-            matchLabels:
-              service: worker
-  policyTypes:
-    - 
-      Ingress
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: hasher
-spec:
-  podSelector:
-    matchLabels:
-      service: hasher
-  ingress:
-    - 
-      ports:
-        - 
-          protocol: TCP
-          port: 8080
-      from:
-        - 
-          podSelector:
-            matchLabels:
-              service: worker
-  policyTypes:
-    - 
-      Ingress
----
+################################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza             #
+#      SPDX-License-Identifier:  GPL-2.0-only                                  #
+################################################################################
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: rng
+  namespace: dockercoins-x
 spec:
   selector:
     matchLabels:
@@ -117,6 +25,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hasher
+  namespace: dockercoins-x
 spec:
   replicas: 1
   selector:
@@ -136,6 +45,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
+  namespace: dockercoins-x
 spec:
   replicas: 1
   selector:
@@ -155,6 +65,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webui
+  namespace: dockercoins-x
 spec:
   replicas: 1
   selector:
@@ -174,6 +85,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: worker
+  namespace: dockercoins-x
 spec:
   replicas: 1
   selector:
@@ -189,13 +101,105 @@ spec:
         image: secobau/dockercoins:worker-1.5
         name: worker
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hasher
+  namespace: dockercoins-x
+spec:
+  podSelector:
+    matchLabels:
+      service: hasher
+  ingress:
+    -
+      from:
+        -
+          namespaceSelector:
+            matchLabels:
+              namespace: dockercoins-x
+        -
+          podSelector:
+            matchLabels:
+              service: worker
+      ports:
+        -
+          protocol: TCP
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis
+  namespace: dockercoins-x
+spec:
+  podSelector:
+    matchLabels:
+      service: redis
+  ingress:
+    -
+      from:
+        -
+          namespaceSelector:
+            matchLabels:
+              namespace: dockercoins-x
+        -
+          podSelector:
+            matchLabels:
+              service: webui
+        -
+          podSelector:
+            matchLabels:
+              service: worker
+      ports:
+        -
+          protocol: TCP
+          port: 6379
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rng
+  namespace: dockercoins-x
+spec:
+  podSelector:
+    matchLabels:
+      service: rng
+  ingress:
+    -
+      from:
+        -
+          namespaceSelector:
+            matchLabels:
+              namespace: dockercoins-x
+        -
+          podSelector:
+            matchLabels:
+              service: worker
+      ports:
+        -
+          protocol: TCP
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: worker
+  namespace: dockercoins-x
+spec:
+  podSelector:
+    matchLabels:
+      service: worker
+  policyTypes:
+  - Ingress
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: hasher
+  namespace: dockercoins-x
 spec:
   ports:
-  - 
+  -
     port: 8080
   selector:
     service: hasher
@@ -204,9 +208,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
+  namespace: dockercoins-x
 spec:
   ports:
-  - 
+  -
     port: 6379
   selector:
     service: redis
@@ -215,9 +220,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rng
+  namespace: dockercoins-x
 spec:
   ports:
-  - 
+  -
     port: 8080
   selector:
     service: rng
@@ -226,6 +232,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: webui
+  namespace: dockercoins-x
 spec:
   ports:
   -
@@ -233,4 +240,21 @@ spec:
   selector:
     service: webui
 ---
-#########################################################################
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: dockercoins
+  namespace: dockercoins-x
+spec:
+  host: dockercoins-x.apps.openshift.sebastian-colomar.es
+  to:
+    kind: Service
+    name: webui
+    weight: 100
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+################################################################################
