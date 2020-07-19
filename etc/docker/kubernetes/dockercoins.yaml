@@ -25,7 +25,6 @@ kind: Deployment
 metadata:
   name: hasher
 spec:
-  replicas: 1
   selector:
     matchLabels:
       service: hasher
@@ -44,7 +43,6 @@ kind: Deployment
 metadata:
   name: redis
 spec:
-  replicas: 1
   selector:
     matchLabels:
       service: redis
@@ -63,7 +61,6 @@ kind: Deployment
 metadata:
   name: webui
 spec:
-  replicas: 1
   selector:
     matchLabels:
       service: webui
@@ -82,7 +79,6 @@ kind: Deployment
 metadata:
   name: worker
 spec:
-  replicas: 1
   selector:
     matchLabels:
       service: worker
@@ -100,7 +96,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: hasher
-  namespace: dockercoins-x
 spec:
   podSelector:
     matchLabels:
@@ -224,11 +219,9 @@ spec:
   to:
     kind: Service
     name: webui
-    weight: 100
   port:
     targetPort: 8080
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
-  wildcardPolicy: None
 ################################################################################
