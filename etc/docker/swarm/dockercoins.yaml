@@ -29,7 +29,7 @@ services:
         - node.role == worker
     image: secobau/dockercoins:webui-1.4
     ports:
-    - "30001:8080"
+    - "8080:8080"
   worker:
     deploy:
       placement:
