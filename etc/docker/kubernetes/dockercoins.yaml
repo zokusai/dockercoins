@@ -5,108 +5,108 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: rng
+  name: rng1
 spec:
   selector:
     matchLabels:
-      service: rng
+      service: rng2
   template:
     metadata:
       labels:
-        service: rng
+        service: rng2
     spec:
       containers:
       -
         image: secobau/dockercoins:rng-1.4
-        name: rng
+        name: rng3
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hasher
+  name: hasher1
 spec:
   selector:
     matchLabels:
-      service: hasher
+      service: hasher2
   template:
     metadata:
       labels:
-        service: hasher
+        service: hasher2
     spec:
       containers:
       -
         image: secobau/dockercoins:hasher-1.4
-        name: hasher
+        name: hasher3
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: redis1
 spec:
   selector:
     matchLabels:
-      service: redis
+      service: redis2
   template:
     metadata:
       labels:
-        service: redis
+        service: redis2
     spec:
       containers:
       -
         image: redis
-        name: redis
+        name: redis3
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webui
+  name: webui1
 spec:
   selector:
     matchLabels:
-      service: webui
+      service: webui2
   template:
     metadata:
       labels:
-        service: webui
+        service: webui2
     spec:
       containers:
       -
         image: secobau/dockercoins:webui-1.4
-        name: webui
+        name: webui3
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: worker1
 spec:
   selector:
     matchLabels:
-      service: worker
+      service: worker2
   template:
     metadata:
       labels:
-        service: worker
+        service: worker2
     spec:
       containers:
       -
         image: secobau/dockercoins:worker-1.5
-        name: worker
+        name: worker3
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: hasher
+  name: hasher1
 spec:
   podSelector:
     matchLabels:
-      service: hasher
+      service: hasher2
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker
+              service: worker2
       ports:
         -
           port: 8080
@@ -114,22 +114,22 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: redis
+  name: redis1
 spec:
   podSelector:
     matchLabels:
-      service: redis
+      service: redis2
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: webui
+              service: webui2
         -
           podSelector:
             matchLabels:
-              service: worker
+              service: worker2
       ports:
         -
           port: 6379
@@ -137,18 +137,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: rng
+  name: rng1
 spec:
   podSelector:
     matchLabels:
-      service: rng
+      service: rng2
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker
+              service: worker2
       ports:
         -
           port: 8080
@@ -156,57 +156,57 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: worker
+  name: worker1
 spec:
   podSelector:
     matchLabels:
-      service: worker
+      service: worker2
   policyTypes:
   - Ingress
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: hasher
+  name: hasher1
 spec:
   ports:
   -
     port: 8080
   selector:
-    service: hasher
+    service: hasher2
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: redis1
 spec:
   ports:
   -
     port: 6379
   selector:
-    service: redis
+    service: redis2
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rng
+  name: rng1
 spec:
   ports:
   -
     port: 8080
   selector:
-    service: rng
+    service: rng2
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: webui
+  name: webui1
 spec:
   ports:
   -
     port: 8080
   selector:
-    service: webui
+    service: webui2
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -215,7 +215,7 @@ metadata:
 spec:
   to:
     kind: Service
-    name: webui
+    name: webui1
   port:
     targetPort: 8080
   tls:
