@@ -167,7 +167,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hasher1
+  name: hasher
 spec:
   ports:
   -
@@ -178,7 +178,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis1
+  name: redis
 spec:
   ports:
   -
@@ -189,7 +189,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rng1
+  name: rng
 spec:
   ports:
   -
@@ -200,7 +200,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: webui1
+  name: webui
 spec:
   ports:
   -
@@ -215,7 +215,7 @@ metadata:
 spec:
   to:
     kind: Service
-    name: webui1
+    name: webui
   port:
     targetPort: 8080
   tls:
