@@ -5,92 +5,92 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: rng
+  name: rng-ds
 spec:
   selector:
     matchLabels:
-      service: rng
+      service-po: rng-po
   template:
     metadata:
       labels:
-        service: rng
+        service-po: rng-po
     spec:
       containers:
       -
         image: secobau/dockercoins:rng-1.7
-        name: rng
+        name: rng-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hasher
+  name: hasher-deploy
 spec:
   selector:
     matchLabels:
-      service: hasher
+      service-po: hasher-po
   template:
     metadata:
       labels:
-        service: hasher
+        service-po: hasher-po
     spec:
       containers:
       -
         image: secobau/dockercoins:hasher-1.7
-        name: hasher
+        name: hasher-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: redis-deploy
 spec:
   selector:
     matchLabels:
-      service: redis
+      service-po: redis-po
   template:
     metadata:
       labels:
-        service: redis
+        service-po: redis-po
     spec:
       containers:
       -
         image: redis
-        name: redis
+        name: redis-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webui
+  name: webui-deploy
 spec:
   selector:
     matchLabels:
-      service: webui
+      service-po: webui-po
   template:
     metadata:
       labels:
-        service: webui
+        service-po: webui-po
     spec:
       containers:
       -
         image: secobau/dockercoins:webui-1.7
-        name: webui
+        name: webui-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: worker-deploy
 spec:
   selector:
     matchLabels:
-      service: worker
+      service-po: worker-po
   template:
     metadata:
       labels:
-        service: worker
+        service-po: worker-po
     spec:
       containers:
       -
         image: secobau/dockercoins:worker-1.7
-        name: worker
+        name: worker-container
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -105,18 +105,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: hasher
+  name: hasher-netpol
 spec:
   podSelector:
     matchLabels:
-      service: hasher
+      service-po: hasher-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker
+              service-po: worker-po
       ports:
         -
           port: 8080
@@ -124,22 +124,22 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: redis
+  name: redis-netpol
 spec:
   podSelector:
     matchLabels:
-      service: redis
+      service-po: redis-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: webui
+              service-po: webui-po
         -
           podSelector:
             matchLabels:
-              service: worker
+              service-po: worker-po
       ports:
         -
           port: 6379
@@ -147,18 +147,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: rng
+  name: rng-netpol
 spec:
   podSelector:
     matchLabels:
-      service: rng
+      service-po: rng-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker
+              service-po: worker-po
       ports:
         -
           port: 8080
@@ -172,7 +172,7 @@ spec:
   -
     port: 8080
   selector:
-    service: hasher
+    service-po: hasher-po
 ---
 apiVersion: v1
 kind: Service
@@ -183,7 +183,7 @@ spec:
   -
     port: 6379
   selector:
-    service: redis
+    service-po: redis-po
 ---
 apiVersion: v1
 kind: Service
@@ -194,7 +194,7 @@ spec:
   -
     port: 8080
   selector:
-    service: rng
+    service-po: rng-po
 ---
 apiVersion: v1
 kind: Service
@@ -205,6 +205,6 @@ spec:
   -
     port: 8080
   selector:
-    service: webui
+    service-po: webui-po
   type: NodePort
 ################################################################################
