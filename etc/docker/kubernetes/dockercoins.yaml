@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:rng-1.4
+        image: secobau/dockercoins:rng-1.7
         name: rng3
 ---
 apiVersion: apps/v1
@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:hasher-1.4
+        image: secobau/dockercoins:hasher-1.7
         name: hasher3
 ---
 apiVersion: apps/v1
@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:webui-1.4
+        image: secobau/dockercoins:webui-1.7
         name: webui3
 ---
 apiVersion: apps/v1
@@ -89,7 +89,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:worker-1.5
+        image: secobau/dockercoins:worker-1.7
         name: worker3
 ---
 apiVersion: networking.k8s.io/v1
