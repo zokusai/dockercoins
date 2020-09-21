@@ -8,7 +8,7 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:hasher-1.6
+    image: secobau/dockercoins:hasher-1.7
   redis:
     deploy:
       placement:
@@ -21,13 +21,13 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:rng-1.6
+    image: secobau/dockercoins:rng-1.7
   webui:
     deploy:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:webui-1.6
+    image: secobau/dockercoins:webui-1.7
     ports:
     - "8080:8080"
   worker:
@@ -35,6 +35,6 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:worker-1.6
+    image: secobau/dockercoins:worker-1.7
 version: "3.8"
 #########################################################################
