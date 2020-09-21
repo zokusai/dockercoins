@@ -5,108 +5,108 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: rng1
+  name: rng-ds
 spec:
   selector:
     matchLabels:
-      service: rng2
+      label-rng: rng-po
   template:
     metadata:
       labels:
-        service: rng2
+        label-rng: rng-po
     spec:
       containers:
       -
         image: secobau/dockercoins:rng-1.7
-        name: rng3
+        name: rng-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hasher1
+  name: hasher-deploy
 spec:
   selector:
     matchLabels:
-      service: hasher2
+      label-hasher: hasher-po
   template:
     metadata:
       labels:
-        service: hasher2
+        label-hasher: hasher-po
     spec:
       containers:
       -
         image: secobau/dockercoins:hasher-1.7
-        name: hasher3
+        name: hasher-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis1
+  name: redis-deploy
 spec:
   selector:
     matchLabels:
-      service: redis2
+      label-redis: redis-po
   template:
     metadata:
       labels:
-        service: redis2
+        label-redis: redis-po
     spec:
       containers:
       -
         image: redis
-        name: redis3
+        name: redis-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webui1
+  name: webui-deploy
 spec:
   selector:
     matchLabels:
-      service: webui2
+      label-webui: webui-po
   template:
     metadata:
       labels:
-        service: webui2
+        label-webui: webui-po
     spec:
       containers:
       -
         image: secobau/dockercoins:webui-1.7
-        name: webui3
+        name: webui-container
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker1
+  name: worker-deploy
 spec:
   selector:
     matchLabels:
-      service: worker2
+      label-worker: worker-po
   template:
     metadata:
       labels:
-        service: worker2
+        label-worker: worker-po
     spec:
       containers:
       -
         image: secobau/dockercoins:worker-1.7
-        name: worker3
+        name: worker-container
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: hasher1
+  name: hasher-netpol
 spec:
   podSelector:
     matchLabels:
-      service: hasher2
+      label-hasher: hasher-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker2
+              label-worker: worker-po
       ports:
         -
           port: 8080
@@ -114,22 +114,22 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: redis1
+  name: redis-netpol
 spec:
   podSelector:
     matchLabels:
-      service: redis2
+      label-redis: redis-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: webui2
+              label-webui: webui-po
         -
           podSelector:
             matchLabels:
-              service: worker2
+              label-worker: worker-po
       ports:
         -
           port: 6379
@@ -137,18 +137,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: rng1
+  name: rng-netpol
 spec:
   podSelector:
     matchLabels:
-      service: rng2
+      label-rng: rng-po
   ingress:
     -
       from:
         -
           podSelector:
             matchLabels:
-              service: worker2
+              label-worker: worker-po
       ports:
         -
           port: 8080
@@ -156,11 +156,11 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: worker1
+  name: worker-netpol
 spec:
   podSelector:
     matchLabels:
-      service: worker2
+      label-worker: worker-po
   policyTypes:
   - Ingress
 ---
@@ -173,7 +173,7 @@ spec:
   -
     port: 8080
   selector:
-    service: hasher2
+    label-hasher: hasher-po
 ---
 apiVersion: v1
 kind: Service
@@ -184,7 +184,7 @@ spec:
   -
     port: 6379
   selector:
-    service: redis2
+    label-redis: redis-po
 ---
 apiVersion: v1
 kind: Service
@@ -195,7 +195,7 @@ spec:
   -
     port: 8080
   selector:
-    service: rng2
+    label-rng: rng-po
 ---
 apiVersion: v1
 kind: Service
@@ -206,7 +206,7 @@ spec:
   -
     port: 8080
   selector:
-    service: webui2
+    label-webui: webui-po
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
