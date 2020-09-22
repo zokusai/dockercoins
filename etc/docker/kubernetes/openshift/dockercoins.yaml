@@ -19,6 +19,9 @@ spec:
       -
         image: secobau/dockercoins:rng-1.7
         name: rng-container
+        ports:
+          -
+            containerPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,6 +40,9 @@ spec:
       -
         image: secobau/dockercoins:hasher-1.7
         name: hasher-container
+        ports:
+          -
+            containerPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -55,6 +61,9 @@ spec:
       -
         image: redis
         name: redis-container
+        ports:
+          -
+            containerPort: 6379
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -73,6 +82,9 @@ spec:
       -
         image: secobau/dockercoins:webui-1.7
         name: webui-container
+        ports:
+          -
+            containerPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -156,6 +168,21 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: webui-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-webui: webui-po
+  ingress:
+    -
+      ports:
+        -
+          port: 8080
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: worker-netpol
 spec:
   podSelector:
@@ -163,6 +190,20 @@ spec:
       label-worker: worker-po
   policyTypes:
   - Ingress
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: dockercoins
+spec:
+  to:
+    kind: Service
+    name: webui
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
 ---
 apiVersion: v1
 kind: Service
@@ -207,18 +248,4 @@ spec:
     port: 8080
   selector:
     label-webui: webui-po
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: dockercoins
-spec:
-  to:
-    kind: Service
-    name: webui
-  port:
-    targetPort: 8080
-  tls:
-    termination: edge
-    insecureEdgeTerminationPolicy: Redirect
 ################################################################################
