@@ -62,8 +62,29 @@ spec:
         image: redis
         name: redis-container
         ports:
-          -
-            containerPort: 6379
+        -
+          containerPort: 6379
+        volumeMounts:
+        -
+          mountPath: /data
+          name: redis-vol
+      volumes:
+        - 
+          name: redis-vol
+          persistentVolumeClaim:
+            claimName: redis-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2
 ---
 apiVersion: apps/v1
 kind: Deployment
