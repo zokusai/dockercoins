@@ -2,32 +2,52 @@
 #      Copyright (C) 2020        Sebastian Francisco Colomar Bauza      #
 #      SPDX-License-Identifier:  GPL-2.0-only                           #
 #########################################################################
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true
+  webui:
+    external: true
+  worker:
+    internal: true
 services:
   hasher:
     deploy:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:hasher-1.7
+    image: secobau/dockercoins:hasher
+    networks:
+    - hasher
   redis:
     deploy:
       placement:
         constraints:
         - node.role == worker
     image: redis
+    networks:
+    - redis
   rng:
     deploy:
       mode: global
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:rng-1.7
+    image: secobau/dockercoins:rng
+    networks:
+    - rng
   webui:
     deploy:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:webui-1.7
+    image: secobau/dockercoins:webui
+    networks:
+    - redis
+    - webui
     ports:
     - "8080:8080"
   worker:
@@ -35,6 +55,11 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:worker-1.7
+    image: secobau/dockercoins:worker
+    networks:
+    - hasher
+    - redis
+    - rng
+    - worker
 version: "3.8"
 #########################################################################
