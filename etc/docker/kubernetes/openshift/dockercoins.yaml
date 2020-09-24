@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:rng
+        image: secobau/dockercoins:rng-2.0
         name: rng-container
         ports:
           -
@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:hasher
+        image: secobau/dockercoins:hasher-2.0
         name: hasher-container
         ports:
           -
@@ -74,18 +74,6 @@ spec:
           persistentVolumeClaim:
             claimName: redis-pvc
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: redis-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: gp2
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -101,7 +89,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:webui
+        image: secobau/dockercoins:webui-2.0
         name: webui-container
         ports:
           -
@@ -122,7 +110,7 @@ spec:
     spec:
       containers:
       -
-        image: secobau/dockercoins:worker
+        image: secobau/dockercoins:worker-2.0
         name: worker-container
 ---
 apiVersion: networking.k8s.io/v1
@@ -211,6 +199,18 @@ spec:
       label-worker: worker-po
   policyTypes:
   - Ingress
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
