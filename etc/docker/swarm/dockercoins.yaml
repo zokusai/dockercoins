@@ -9,10 +9,6 @@ networks:
     internal: true
   rng:
     internal: true
-  webui:
-    internal: false
-  worker:
-    internal: true
 services:
   hasher:
     deploy:
@@ -47,7 +43,6 @@ services:
     image: secobau/dockercoins:webui
     networks:
     - redis
-    - webui
     ports:
     - "8080:8080"
   worker:
@@ -60,6 +55,5 @@ services:
     - hasher
     - redis
     - rng
-    - worker
 version: "3.8"
 #########################################################################
