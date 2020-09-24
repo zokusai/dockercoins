@@ -15,7 +15,7 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:hasher
+    image: secobau/dockercoins:hasher-2.0
     networks:
     - hasher
   redis:
@@ -32,7 +32,7 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:rng
+    image: secobau/dockercoins:rng-2.0
     networks:
     - rng
   webui:
@@ -40,7 +40,7 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:webui
+    image: secobau/dockercoins:webui-2.0
     networks:
     - redis
     ports:
@@ -50,7 +50,7 @@ services:
       placement:
         constraints:
         - node.role == worker
-    image: secobau/dockercoins:worker
+    image: secobau/dockercoins:worker-2.0
     networks:
     - hasher
     - redis
