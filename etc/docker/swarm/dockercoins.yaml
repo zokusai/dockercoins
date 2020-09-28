@@ -44,7 +44,7 @@ services:
     networks:
     - redis
     ports:
-    - "8080:8080"
+    - "30003:8080"
   worker:
     deploy:
       placement:
