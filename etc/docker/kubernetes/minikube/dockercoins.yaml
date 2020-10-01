@@ -1,0 +1,258 @@
+################################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza             #
+#      SPDX-License-Identifier:  GPL-2.0-only                                  #
+################################################################################
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: rng-ds
+spec:
+  selector:
+    matchLabels:
+      label-rng: rng-po
+  template:
+    metadata:
+      labels:
+        label-rng: rng-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:rng
+        name: rng-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasher-deploy
+spec:
+  selector:
+    matchLabels:
+      label-hasher: hasher-po
+  template:
+    metadata:
+      labels:
+        label-hasher: hasher-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:hasher
+        name: hasher-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deploy
+spec:
+  selector:
+    matchLabels:
+      label-redis: redis-po
+  template:
+    metadata:
+      labels:
+        label-redis: redis-po
+    spec:
+      containers:
+      -
+        image: redis
+        name: redis-container
+        ports:
+        -
+          containerPort: 6379
+        volumeMounts:
+        -
+          mountPath: /data
+          name: redis-vol
+      volumes:
+        - 
+          name: redis-vol
+          persistentVolumeClaim:
+            claimName: redis-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deploy
+spec:
+  selector:
+    matchLabels:
+      label-webui: webui-po
+  template:
+    metadata:
+      labels:
+        label-webui: webui-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:webui
+        name: webui-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deploy
+spec:
+  selector:
+    matchLabels:
+      label-worker: worker-po
+  template:
+    metadata:
+      labels:
+        label-worker: worker-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:worker
+        name: worker-container
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hasher-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-hasher: hasher-po
+  ingress:
+    -
+      from:
+        -
+          podSelector:
+            matchLabels:
+              label-worker: worker-po
+      ports:
+        -
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-redis: redis-po
+  ingress:
+    -
+      from:
+        -
+          podSelector:
+            matchLabels:
+              label-webui: webui-po
+        -
+          podSelector:
+            matchLabels:
+              label-worker: worker-po
+      ports:
+        -
+          port: 6379
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rng-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-rng: rng-po
+  ingress:
+    -
+      from:
+        -
+          podSelector:
+            matchLabels:
+              label-worker: worker-po
+      ports:
+        -
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: webui-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-webui: webui-po
+  ingress:
+    -
+      ports:
+        -
+          port: 8080
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: worker-netpol
+spec:
+  podSelector:
+    matchLabels:
+      label-worker: worker-po
+  policyTypes:
+  - Ingress
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hasher
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-hasher: hasher-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+  -
+    port: 6379
+  selector:
+    label-redis: redis-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rng
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-rng: rng-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-webui: webui-po
+################################################################################
