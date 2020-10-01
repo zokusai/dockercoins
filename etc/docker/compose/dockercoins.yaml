@@ -1,0 +1,38 @@
+#########################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza      #
+#      SPDX-License-Identifier:  GPL-2.0-only                           #
+#########################################################################
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true
+services:
+  hasher:
+    image: secobau/dockercoins:hasher
+    networks:
+    - hasher
+  redis:
+    image: redis
+    networks:
+    - redis
+  rng:
+    image: secobau/dockercoins:rng
+    networks:
+    - rng
+  webui:
+    image: secobau/dockercoins:webui
+    networks:
+    - redis
+    ports:
+    - "8080:8080"
+  worker:
+    image: secobau/dockercoins:worker
+    networks:
+    - hasher
+    - redis
+    - rng
+version: "2"
+#########################################################################
