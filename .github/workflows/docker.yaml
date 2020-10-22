@@ -1,0 +1,28 @@
+name: docker
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps: 
+      -
+        name: checkout
+        uses: actions/checkout@v2
+      -
+        name: build and test
+        run: |
+          docker build -t dockercoins:test --no-cache worker/
+          docker run dockercoins:test
+          while true
+            do
+              sleep 1
+              docker ps | grep Up && break
+            done
+          while true
+            do
+              sleep 1
+              docker ps | grep python && break
+            done
+            
