@@ -1,5 +1,5 @@
-hasher: 80
+hasher: 8080
 redis: 6379
-rng: 80
-webui: 80
+rng: 8080
+webui: 8080
 
