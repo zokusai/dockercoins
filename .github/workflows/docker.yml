@@ -11,19 +11,15 @@ jobs:
         name: checkout
         uses: actions/checkout@v2
       -
-        name: build and test
+        name: worker
         run: |
+          set -x
           docker build -t worker:testing --no-cache worker/
           docker network create worker
           docker run -d --network worker --name redis-svc redis
-          docker run --network worker worker:testing
+          docker run -d --network worker --name worker worker:testing
           while true
             do
-              sleep 1
-              docker ps | grep Up && break
-            done
-          while true
-            do
-              sleep 1
-              docker ps | grep python && break
+              sleep 10
+              docker exec worker ps | grep python && break
             done
