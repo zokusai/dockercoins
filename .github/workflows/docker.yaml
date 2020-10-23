@@ -14,12 +14,29 @@ jobs:
         name: worker
         run: |
           set -x
-          docker build -t worker:test --no-cache worker/
-          docker network create worker
-          docker run --network worker --name redis-svc -d redis
-          docker run --network worker --name worker -d worker:test
+          docker build -t test --no-cache worker/
+          docker network create test
+          docker run --network test --name redis-svc -d redis
+          docker run --network test --name test -d test
           while true
             do
               sleep 10
-              docker exec worker ps | grep python && break
-            done            
+              docker exec test ps | grep python && break
+            done   
+          docker rm -f test
+          docker rm -f redis-svc
+          docker network rm test
+      -
+        name: rng
+        run: |
+          set -x
+          docker build -t test --no-cache rng/
+          docker network create test
+          docker run --network test --name test -d test
+          while true
+            do
+              sleep 10
+              docker exec test ps | grep python && break
+            done   
+          docker rm -f test
+          docker network rm test
