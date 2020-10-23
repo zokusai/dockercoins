@@ -38,5 +38,10 @@ jobs:
               sleep 10
               docker exec test ps | grep python && break
             done   
+          while true
+            do
+              sleep 10
+              docker exec test netstat -putana | grep 8080 && break
+            done   
           docker rm -f test
           docker network rm test
