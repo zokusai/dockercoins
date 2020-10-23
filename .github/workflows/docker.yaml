@@ -78,3 +78,29 @@ jobs:
             done
           docker rm -f test
           docker network rm test
+      -
+        name: webui
+        run: |
+          set -x
+          docker build -t test --no-cache webui/
+          docker network create test
+          docker run --network test --name test -d test
+          while true
+            do
+              sleep 10
+              docker exec test ps | grep node && break
+            done   
+          while true
+            do
+              sleep 10
+              docker ps | grep node.*8080.*test && break
+            done   
+          docker rm -f test
+          docker run --network test --name test -d -p 80:8080 test
+          while true
+            do
+              sleep 10
+              curl localhost -I | grep 200 && break
+            done
+          docker rm -f test
+          docker network rm test
