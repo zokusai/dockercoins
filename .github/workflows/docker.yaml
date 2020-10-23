@@ -15,16 +15,10 @@ jobs:
         run: |
           docker build -t worker:test --no-cache worker/
           docker network create worker
-          docker run --network worker --name redis-svc redis
-          docker run --network worker worker:test
+          docker run --network worker --name redis-svc -d redis
+          docker run --network worker --name worker -d worker:test
           while true
             do
-              sleep 1
-              docker ps | grep Up && break
-            done
-          while true
-            do
-              sleep 1
-              docker ps | grep python && break
-            done
-            
+              sleep 10
+              docker exec worker ps | grep python && break
+            done            
