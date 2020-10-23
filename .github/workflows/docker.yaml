@@ -13,8 +13,10 @@ jobs:
       -
         name: build and test
         run: |
-          docker build -t dockercoins:test --no-cache worker/
-          docker run dockercoins:test
+          docker build -t worker:test --no-cache worker/
+          docker network create worker
+          docker run --network worker --name redis-svc redis
+          docker run --network worker worker:test
           while true
             do
               sleep 1
