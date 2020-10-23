@@ -52,3 +52,29 @@ jobs:
             done
           docker rm -f test
           docker network rm test
+      -
+        name: hasher
+        run: |
+          set -x
+          docker build -t test --no-cache hasher/
+          docker network create test
+          docker run --network test --name test -d test
+          while true
+            do
+              sleep 10
+              docker exec test ps | grep ruby && break
+            done   
+          while true
+            do
+              sleep 10
+              docker exec test netstat -putana | grep 8080 && break
+            done   
+          docker rm -f test
+          docker run --network test --name test -d -p 80:8080 test
+          while true
+            do
+              sleep 10
+              curl localhost -I | grep 200 && break
+            done
+          docker rm -f test
+          docker network rm test
