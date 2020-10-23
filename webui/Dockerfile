@@ -1,6 +1,6 @@
 FROM node:4-slim
 WORKDIR /app
-RUN npm install express && npm install redis
+RUN npm install express redis
 COPY files/ /files/
 COPY webui.js /
 
