@@ -15,7 +15,7 @@ jobs:
         run: |
           docker build -t worker:testing --no-cache worker/
           docker network create worker
-          docker run --network worker --name redis-svc redis
+          docker run -d --network worker --name redis-svc redis
           docker run --network worker worker:testing
           while true
             do
