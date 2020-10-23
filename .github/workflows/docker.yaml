@@ -84,6 +84,7 @@ jobs:
           set -x
           docker build -t test --no-cache webui/
           docker network create test
+          docker run --network test --name redis-svc -d redis          
           docker run --network test --name test -d test
           while true
             do
