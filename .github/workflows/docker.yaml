@@ -101,7 +101,7 @@ jobs:
           while true
             do
               sleep 10
-              curl localhost:8080 -I | grep 200 && break
+              curl localhost -I | grep -P 'status:\s+(302|200|201)' && break
             done
           docker rm -f test
           docker network rm test
