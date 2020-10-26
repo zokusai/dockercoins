@@ -103,7 +103,7 @@ jobs:
               sleep 10
               result=$(curl localhost -I)
               echo $result
-              cat $result | grep -v 500 && break
+              echo $result | grep -v 500 && break
             done
           docker rm -f test
           docker network rm test
