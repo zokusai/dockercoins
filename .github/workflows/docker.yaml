@@ -101,9 +101,7 @@ jobs:
           while true
             do
               sleep 10
-              result=$(curl localhost -I)
-              echo $result
-              echo $result | grep -v 500 && break
+              curl localhost -I | grep -E '200|302' && break
             done
           docker rm -f test
           docker network rm test
