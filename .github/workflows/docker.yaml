@@ -103,5 +103,5 @@ jobs:
               sleep 10
               curl localhost -I | grep -E '200|302' && break
             done
-          docker rm -f test
+          docker rm -f test redis-svc
           docker network rm test
